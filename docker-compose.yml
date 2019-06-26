@@ -1,0 +1,54 @@
+version: "3.3"
+services:
+
+  consul:
+    image: consul:1.5.1
+    command: ["consul","agent","-config-file=/config/consul.hcl","-config-dir=/config"]
+    volumes:
+      - "./consul_config:/config"
+    ports:
+      - 8500:8500
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.2
+
+  # Define downstream service and proxy
+  downstream:
+    image: golang:alpine
+    command: ['go','run','/app/main.go']
+    volumes:
+      - "./downstream_service:/app"
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.3
+    ports:
+      - 9000:9000
+  downstream_envoy:
+    image: envoyproxy/envoy-alpine:v1.9.1
+    command: ["envoy","-c","/config/downstream_envoy.json"]
+    volumes:
+      - "./envoy_config:/config"
+    network_mode: "service:downstream"
+
+  # Define upstream service and proxy
+  upstream:
+    image: golang:alpine
+    command: ['go','run','/app/main.go']
+    volumes:
+      - "./upstream_service:/app"
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.4
+  upstream_proxy:
+    image: envoyproxy/envoy-alpine:v1.9.1
+    command: ["envoy","-c","/config/upstream_envoy.json"]
+    volumes:
+      - "./envoy_config:/config"
+    network_mode: "service:upstream"
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
