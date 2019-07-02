@@ -369,7 +369,8 @@ Percentage of the requests served within a certain time (ms)
 ```
 
 You will see that there are large number of failed requests, this is because the circuit breaker in Envoy is tripping
-as the max_requests is now less that the concurrency in ApacheBench.
+as the max_requests is now less that the concurrency in ApacheBench. Envoy will not send requests to the local service
+when the inbound concurrent requests exceed the configured circuit breaker value.
 
 ### Note
 When changing the configuration values for the Consul config, always restart docker compose with `docker-compose rm`.
