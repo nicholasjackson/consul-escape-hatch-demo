@@ -31,14 +31,13 @@
     ]
   },
   "stats_config": {
-                        "stats_tags": [
-                                {
-                        "tag_name": "local_cluster",
-                        "fixed_value": "downstream"
-                }
-                        ],
-                        "use_all_default_tags": true
-                },
+    "stats_tags": [
+    {
+      "tag_name": "local_cluster",
+      "fixed_value": "downstream"
+    }],
+    "use_all_default_tags": true
+  },
   "dynamic_resources": {
     "lds_config": { "ads": {} },
     "cds_config": { "ads": {} },

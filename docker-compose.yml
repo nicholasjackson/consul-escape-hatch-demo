@@ -2,7 +2,7 @@ version: "3.3"
 services:
 
   consul:
-    image: consul:1.5.1
+    image: consul:1.5.2
     command: ["consul","agent","-config-file=/config/consul.hcl","-config-dir=/config"]
     volumes:
       - "./consul_config:/config"
@@ -15,9 +15,9 @@ services:
   # Define downstream service and proxy
   downstream:
     image: golang:alpine
-    command: ['go','run','/app/main.go']
+    command: ['go','run','/app/main.go','--bind-address=10.5.0.3:9000','--upstream-uri=http://127.0.0.1:9001']
     volumes:
-      - "./downstream_service:/app"
+      - "./service:/app"
     networks:
       vpcbr:
         ipv4_address: 10.5.0.3
@@ -33,9 +33,9 @@ services:
   # Define upstream service and proxy
   upstream:
     image: golang:alpine
-    command: ['go','run','/app/main.go']
+    command: ['go','run','/app/main.go','--bind-address=127.0.0.1:9001','--type=upstream', '--upstream-errors=0.1']
     volumes:
-      - "./upstream_service:/app"
+      - "./service:/app"
     networks:
       vpcbr:
         ipv4_address: 10.5.0.4
