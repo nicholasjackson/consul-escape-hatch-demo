@@ -22,7 +22,7 @@
         "hosts": [
           {
             "socket_address": {
-              "address": "consul",
+              "address": "10.5.0.2",
               "port_value": 8502
             }
           }
